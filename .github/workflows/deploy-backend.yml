@@ -85,15 +85,16 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 2m
           script: |
             # Check container status
             echo "Container Status:"
             docker ps | grep ${{ env.CONTAINER_NAME }}
             
-            # Wait for app to be fully ready (30 seconds)
+            # Wait for app to be fully ready (45 seconds for workers to start)
             echo ""
-            echo "Waiting for application to start..."
-            sleep 30
+            echo "Waiting for application to start (45 seconds)..."
+            sleep 45
             
             # Check container logs
             echo ""
@@ -102,15 +103,20 @@ jobs:
             
             # Test health endpoint with retries
             echo ""
-            echo "Health Check:"
-            for i in {1..5}; do
-              if curl -f http://localhost:8000/health; then
+            echo "Health Check with retries:"
+            for i in 1 2 3 4 5; do
+              echo "Attempt $i/5..."
+              if curl -f -s http://localhost:8000/health; then
+                echo ""
                 echo "✅ Health check passed!"
                 exit 0
               fi
-              echo "Retry $i/5..."
-              sleep 5
+              if [ $i -lt 5 ]; then
+                echo "Waiting 5 seconds before retry..."
+                sleep 5
+              fi
             done
+            echo ""
             echo "❌ Health check failed after 5 retries"
             exit 1
 
