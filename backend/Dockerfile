@@ -1,5 +1,5 @@
 # Multi-stage build for optimized production image
-# CI/CD pipeline configured and verified
+# CI/CD pipeline configured and verified - health checks optimized
 
 # Stage 1: Builder
 FROM python:3.11-slim as builder
