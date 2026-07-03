@@ -7,6 +7,7 @@ export default function Upload() {
   const navigate = useNavigate()
   const { setSession, setTaskType } = useSessionStore()
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null)
   const [columns, setColumns] = useState<string[]>([])
   const [target, setTarget] = useState('')
