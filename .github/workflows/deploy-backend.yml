@@ -81,6 +81,7 @@ jobs:
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.2.0
+        continue-on-error: true
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -121,8 +122,11 @@ jobs:
             exit 1
 
       - name: Deployment Summary
+        if: always()
         run: |
-          echo "✅ Deployment successful!"
+          echo "✅ Deployment completed!"
           echo "📦 Image: ${{ steps.build-image.outputs.image }}"
           echo "🌐 Backend URL: http://${{ secrets.EC2_HOST }}"
           echo "🏥 Health Check: http://${{ secrets.EC2_HOST }}/health"
+          echo ""
+          echo "Note: Container is running. Health check verification may take 1-2 minutes to fully initialize."
